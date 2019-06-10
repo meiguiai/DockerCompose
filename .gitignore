@@ -3,6 +3,3 @@ dbs/*
 db-*/
 .env
 *.bak
-apn.env
-bx.env
-
