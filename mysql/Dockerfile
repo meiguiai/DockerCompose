@@ -1,9 +1,7 @@
 FROM mysql:latest
 
-LABEL maintainer="Enter <2017entery@gmail.com>"
-LABEL description="Docker container for Swift Vapor development"
+LABEL maintainer="Mars <11@boxue.io>"
+LABEL description="Docker container for server side development."
 
-RUN mkdir /run/secrets
-
-ADD mysql /run/secrets/mysql
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 

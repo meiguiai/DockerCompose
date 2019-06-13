@@ -1,20 +1,6 @@
 version: "3.6"
 
 services:
-    vapor:
-        build:
-            context: ./vapor
-        image: ${CURRENT_VAPOR_IMG}
-        ports:
-            - 8080:8080
-        volumes:
-            - ${HOST_ROOT}:${CONTAINER_ROOT}
-        working_dir: ${CONTAINER_ROOT}
-        tty: true
-        entrypoint: bash
-        networks:
-            - bx-net
-
     nginx:
         build:
             context: ./nginx
@@ -27,17 +13,42 @@ services:
             - bx-net
 
     mysql:
+        build:
+            context: ./mysql
         image: ${CURRENT_DB_IMG}
-        command: --default-authentication-plugin=caching_sha2_password
+        command: --default-authentication-plugin=mysql_native_password
         ports:
             - ${HOST_DB_PORT}:3306
+        volumes:
+            - ${HOST_DB_ROOT}:/var/lib/mysql
         environment:
-            MYSQL_ROOT_PASSWORD: vapor
-            MYSQL_DATABASE: vapor
-            MYSQL_USER: vapor
-            MYSQL_PASSWORD: vapor
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${DB_NAME}
+            MYSQL_USER: ${DB_USER}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            TZ: Asia/Shanghai
         networks:
-           - bx-net
+            - bx-net
+
+    redis:
+        build:
+            context: ./redis
+        image: ${CURRENT_REDIS_IMG}
+        ports:
+            - ${HOST_REDIS_PORT}:6379 # debugging only
+        networks:
+            - bx-net
+
+    echo:
+        build:
+            context: ./echo-server
+        image: ${CURRENT_ECHO_IMG}
+        # We comment out the port because we forward the request
+        # to echo by Nginx internally.
+        #ports:
+        #    - ${HOST_ECHO_PORT}:6001 # debugging only
+        networks:
+            - bx-net
 
 networks:
     bx-net:
